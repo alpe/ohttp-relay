@@ -1,0 +1,21 @@
+# Binaries
+/bin
+/ohttprelay
+/test-client
+/echo-gateway
+
+# Go
+*.o
+*.test
+vendor/
+go.work
+go.work.sum
+
+# IDEs
+.idea
+.vscode
+.DS_Store
+
+# Coverage
+coverage.txt
+

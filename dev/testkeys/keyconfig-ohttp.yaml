@@ -1,0 +1,6 @@
+key_id: 1
+kem: P256_HKDF_SHA256
+public_key: 048669979b4997e8df4e77ffb9e82f3618abda952353cddba745e10e227b78423fd50f8328fe6c5de8f147f47ea28f5d50b1c9b20e1f71451b56f4875073b0b0d2
+symmetric_algorithms:
+    - kdf: SHA256
+      aead: AES128GCM

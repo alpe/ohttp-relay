@@ -1,0 +1,63 @@
+name: unit-test
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+
+permissions: read-all
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ff5b1e4f3e4a # v2.13.2
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            *.githubusercontent.com:443
+            proxy.golang.org:443
+            storage.googleapis.com:443
+
+      - uses: actions/checkout@0f1e6d4bfbf3d4e3e3b3c3e3e3e3e3e3e3e3e3e3 # v5.0.1
+
+      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v6.0.0
+        with:
+          go-version: "1.25.4"
+          check-latest: true
+
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          git diff --exit-code
+
+      - uses: technote-space/get-diff-action@v6.1.2
+        id: git_diff
+        with:
+          PATTERNS: |
+            **/*.go
+            go.mod
+            go.sum
+            **/go.mod
+            **/go.sum
+            **/Makefile
+            Makefile
+        ###################
+        #### Build App ####
+        ###################
+      - name: Build artifacts # to ensure everything compiles
+        if: env.GIT_DIFF
+        run: make build
+      - name: test
+        run: make test-unit
