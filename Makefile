@@ -12,12 +12,11 @@ DOCKER_REPO := alpetest
 
 .DEFAULT_GOAL := help
 
-.PHONY: help
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_.-]+:.*?## .+' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS=":.*?## "}; {printf "\033[36m%-22s\033[0m %s\n", $$1, $$2}'
+.PHONY: help
 
 
-.PHONY: build-all
 build-all: ## Build all binaries from cmd directory into ./bin
 	@mkdir -p $(BIN_DIR)
 	@for pkg in $(CMD_PKGS); do \
@@ -25,17 +24,20 @@ build-all: ## Build all binaries from cmd directory into ./bin
 		echo "Building $$binary..."; \
 		$(GO) build -o $(BIN_DIR)/$$binary ./$$pkg; \
 	done
+.PHONY: build-all
 
-.PHONY: test
+test-all: test e2e-test ## Run all unit + e2e tests
+.PHONY: test-all
+
 test: ## Run unit tests
 	$(GO) test ./...
+.PHONY: test
 
 # -----------------------------
 # E2E testing with Docker Compose
 # -----------------------------
 COMPOSE ?= docker compose
 
-.PHONY: e2e-build
 e2e-build: ## Build Docker images used by docker-compose for local arch (no buildx)
 	@for pkg in $(CMD_PKGS); do \
 	  binary=$$(basename $$pkg); \
@@ -44,8 +46,8 @@ e2e-build: ## Build Docker images used by docker-compose for local arch (no buil
 	    docker build -t $(DOCKER_REPO)/$$binary:local -f $$pkg/Dockerfile .; \
 	  fi; \
 	done
+.PHONY: e2e-build
 
-.PHONY: e2e-up
 e2e-up: ## Start docker-compose stack for e2e tests and wait for readiness
 	$(COMPOSE) up -d
 	# Wait for Envoy readiness via admin endpoint inside the compose network
@@ -58,32 +60,28 @@ e2e-up: ## Start docker-compose stack for e2e tests and wait for readiness
 	  fi; \
 	  sleep 2; \
 	done
+.PHONY: e2e-up
 
-.PHONY: e2e-test
 e2e-test: ## Run test-client against the running stack
 	$(COMPOSE) run --rm test-client-rly
+.PHONY: e2e-test
 
-.PHONY: e2e-down
 e2e-down: ## Stop docker-compose stack and remove volumes
 	$(COMPOSE) down -v
+.PHONY: e2e-down
 
-.PHONY: e2e
 e2e: ## Full e2e flow: build images, start stack, run client, teardown
 	set -euo pipefail; \
 	trap '$(COMPOSE) logs > e2e-logs.txt || true; $(COMPOSE) down -v || true' EXIT; \
 	$(MAKE) e2e-build; \
 	$(MAKE) e2e-up; \
 	$(MAKE) e2e-test
+.PHONY: e2e
 
-.PHONY: tidy
-tidy: ## Sync go.mod/go.sum
-	$(GO) mod tidy
-
-.PHONY: fmt
 fmt: ## Format Go sources
 	$(GO) fmt ./...
+.PHONY: fmt
 
-.PHONY: docker-build-all-linux
 docker-build-all-linux: ## cross build all docker artifacts for linux/amd64
 	@for pkg in $(CMD_PKGS); do \
 		binary=$$(basename $$pkg); \
@@ -92,8 +90,8 @@ docker-build-all-linux: ## cross build all docker artifacts for linux/amd64
 			docker buildx build --platform=linux/amd64 -t $(DOCKER_REPO)/$$binary:local -f $$pkg/Dockerfile .; \
 		fi \
 	done
+.PHONY: docker-build-all-linux
 
-.PHONY: docker-publish-all-linux
 docker-publish-all-linux: ## publish all local dev docker builds to docker hub
 	@for pkg in $(CMD_PKGS); do \
 		binary=$$(basename $$pkg); \
@@ -102,3 +100,4 @@ docker-publish-all-linux: ## publish all local dev docker builds to docker hub
 			docker push $(DOCKER_REPO)/$$binary:local; \
 		fi \
 	done
+.PHONY: docker-publish-all-linux
