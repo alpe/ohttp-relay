@@ -12,8 +12,8 @@ github.com/cncf/xds/go v0.0.0-20251110193048-8bfbf64dc13e h1:gt7U1Igw0xbJdyaCM5H
 github.com/cncf/xds/go v0.0.0-20251110193048-8bfbf64dc13e/go.mod h1:KdCmV+x/BuvyMxRnYBlmVaq4OLiKW6iRQfvC62cvdkI=
 github.com/confidentsecurity/bhttp v0.0.6 h1:wcAJE0nvLYwa1nOAPJ+8tfxY/cBgCwLX6Gl/EEY/DJA=
 github.com/confidentsecurity/bhttp v0.0.6/go.mod h1:NrzuPh7/VKrWQjIaQ/8eMeeFshQBKzp4yX12d20eFpk=
-github.com/confidentsecurity/ohttp v0.0.8 h1:Pa/PZnPXkVyG9RULWSwPjlOyVtY98EQrM6lfOQmQwdM=
-github.com/confidentsecurity/ohttp v0.0.8/go.mod h1:bpdgdHQO73QTjJpIy1QYvu4bpTd5sD8nydme2I5Mcz4=
+github.com/confidentsecurity/ohttp v0.0.9 h1:+2JnPT8EDBxO30+yzT6eHb6H12cYbGK1t/bZkBm5PiI=
+github.com/confidentsecurity/ohttp v0.0.9/go.mod h1:bpdgdHQO73QTjJpIy1QYvu4bpTd5sD8nydme2I5Mcz4=
 github.com/confidentsecurity/twoway v0.0.6 h1:KcfsgYvTb6sXLTWy3dg0ix644WQNYu2nlLcMlNwcwAE=
 github.com/confidentsecurity/twoway v0.0.6/go.mod h1:ggViao8GlQ/IMq2hgOqdZAqrfwanGZOjuwyh0xyuW/E=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

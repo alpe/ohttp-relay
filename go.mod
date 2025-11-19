@@ -22,7 +22,7 @@ require github.com/go-logr/zapr v1.3.0
 
 require (
 	github.com/cloudflare/circl v1.6.1
-	github.com/confidentsecurity/ohttp v0.0.8
+	github.com/confidentsecurity/ohttp v0.0.9
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/redis/go-redis/v9 v9.16.0
 	github.com/stretchr/testify v1.11.1
