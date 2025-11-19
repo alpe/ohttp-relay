@@ -58,6 +58,6 @@ jobs:
         ###################
       - name: Build artifacts # to ensure everything compiles
         if: env.GIT_DIFF
-        run: make build
+        run: make build-all
       - name: test
         run: make test-unit
