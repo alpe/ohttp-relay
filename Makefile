@@ -29,9 +29,12 @@ build-all: ## Build all binaries from cmd directory into ./bin
 test-all: test e2e-test ## Run all unit + e2e tests
 .PHONY: test-all
 
-test: ## Run unit tests
-	$(GO) test ./...
+test: test-unit ## Run unit tests
 .PHONY: test
+
+test-unit:
+	$(GO) test ./...
+.PHONY: test-unit
 
 # -----------------------------
 # E2E testing with Docker Compose
