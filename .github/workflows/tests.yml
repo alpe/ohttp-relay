@@ -43,6 +43,6 @@ jobs:
         ###################
         #### Build App ####
         ###################
-      - name: Build demo app # to ensure everything compiles
+      - name: Build cmd apps # to ensure everything compiles
         if: env.GIT_DIFF
-        run: make build
+        run: make build-all
