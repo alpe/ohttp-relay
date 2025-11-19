@@ -1,1 +1,1 @@
-package copied from https://github.com/kubernetes-sigs/gateway-api-inference-extension
+package initially copied from https://github.com/kubernetes-sigs/gateway-api-inference-extension
