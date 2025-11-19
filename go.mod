@@ -1,4 +1,4 @@
-module github.com/alpe/ohttprelay
+module github.com/alpe/ohttp-relay
 
 go 1.25.1
 

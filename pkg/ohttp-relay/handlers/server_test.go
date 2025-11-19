@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/relay"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/relay"
 	envoyCorev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	extProcPb "github.com/envoyproxy/go-control-plane/envoy/service/ext_proc/v3"
 	envoyTypePb "github.com/envoyproxy/go-control-plane/envoy/type/v3"

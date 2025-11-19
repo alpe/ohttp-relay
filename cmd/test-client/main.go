@@ -11,7 +11,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/alpe/ohttprelay/pkg/config"
+	"github.com/alpe/ohttp-relay/pkg/config"
 	"github.com/confidentsecurity/ohttp"
 )
 

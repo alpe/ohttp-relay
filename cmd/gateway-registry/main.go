@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
 	"github.com/redis/go-redis/v9"
 )
 

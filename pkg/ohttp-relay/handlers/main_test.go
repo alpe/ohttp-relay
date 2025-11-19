@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 )
 
 func TestMain(m *testing.M) {

@@ -17,8 +17,8 @@ import (
 
 	"maps"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
-	"github.com/alpe/ohttprelay/pkg/config"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/pkg/config"
 	"github.com/cloudflare/circl/hpke"
 	"github.com/cloudflare/circl/kem"
 	"github.com/confidentsecurity/ohttp"

@@ -9,15 +9,15 @@ COPY . .
 
 # Build static binary
 RUN --mount=type=cache,target=/go/pkg/mod \
-    CGO_ENABLED=0 go build -mod=readonly  -trimpath -ldflags "-s -w" -o /out/ohttprelay ./cmd/ohttprelay
+    CGO_ENABLED=0 go build -mod=readonly  -trimpath -ldflags "-s -w" -o /out/ohttp-relay ./cmd/ohttp-relay
 
 FROM scratch
 WORKDIR /
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /out/ohttprelay /ohttprelay
+COPY --from=builder /out/ohttp-relay /ohttp-relay
 
 USER 10001
 
 EXPOSE 3500
-ENTRYPOINT ["/ohttprelay"]
+ENTRYPOINT ["/ohttp-relay"]

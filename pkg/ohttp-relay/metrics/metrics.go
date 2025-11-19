@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	instrumentationName = "github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
+	instrumentationName = "github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 )
 
 var (

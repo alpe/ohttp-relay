@@ -1,6 +1,6 @@
 # OHTTP Relay
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/alpe/ohttprelay)](https://goreportcard.com/report/github.com/alpe/ohttprelay)
+[![Go Report Card](https://goreportcard.com/badge/github.com/alpe/ohttp-relay)](https://goreportcard.com/report/github.com/alpe/ohttp-relay)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 The **OHTTP Relay** is an [Envoy External Processor (ext_proc)](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_proc_filter) that enables privacy-preserving communication by forwarding [Oblivious HTTP (OHTTP)](https://datatracker.ietf.org/doc/rfc9458/) encapsulated requests to a configured gateway.

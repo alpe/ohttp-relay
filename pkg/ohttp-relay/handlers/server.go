@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
 	envoyCorev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	extProcPb "github.com/envoyproxy/go-control-plane/envoy/service/ext_proc/v3"
 	envoyTypePb "github.com/envoyproxy/go-control-plane/envoy/type/v3"
@@ -17,9 +17,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/relay"
-	logutil "github.com/alpe/ohttprelay/pkg/ohttprelay/util/logging"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/relay"
+	logutil "github.com/alpe/ohttp-relay/pkg/ohttp-relay/util/logging"
 )
 
 // Media types per RFC 9458 / OHTTP

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 )
 
 var ErrNoGateway = fmt.Errorf("no gateway found")
