@@ -30,9 +30,9 @@ jobs:
             proxy.golang.org:443
             storage.googleapis.com:443
 
-      - uses: actions/checkout@0f1e6d4bfbf3d4e3e3b3c3e3e3e3e3e3e3e3e3e3 # v5.0.1
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
 
-      - uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v6.0.0
+      - uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
         with:
           go-version: "1.25.4"
           check-latest: true
@@ -42,7 +42,7 @@ jobs:
           go mod tidy
           git diff --exit-code
 
-      - uses: technote-space/get-diff-action@v6.1.2
+      - uses: technote-space/get-diff-action@f27caffdd0fb9b13f4fc191c016bb4e0632844af # v6.1.2
         id: git_diff
         with:
           PATTERNS: |
