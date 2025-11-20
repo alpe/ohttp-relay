@@ -152,7 +152,12 @@ func fetchKeyConfig(base string) (ohttp.KeyConfig, error) {
 	url += "/.well-known/ohttp-configs"
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	resp, err := hc.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return ohttp.KeyConfig{}, fmt.Errorf("create request: %w", err)
+	}
+	req.Header.Set("Accept", "application/ohttp-keys")
+	resp, err := hc.Do(req)
 	if err != nil {
 		return ohttp.KeyConfig{}, fmt.Errorf("get %s: %w", url, err)
 	}

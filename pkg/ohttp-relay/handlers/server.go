@@ -37,19 +37,19 @@ const ohttpConfigsPath = "/.well-known/ohttp-configs"
 // returns the opaque response back to Envoy. No decryption takes place here.
 // This is a buffered implementation: we wait for EndOfStream before forwarding.
 type Server struct {
-	streaming           bool
-	relayer             relay.Relayer
-	maxRequestBodySize  int64
-	forwardOhttpConfigs bool
+	streaming                bool
+	relayer                  relay.Relayer
+	maxRequestBodySize       int64
+	serveGatewayOhttpConfigs bool
 }
 
 // NewServer constructs a new OHTTP relay handler.
 func NewServer(relayer relay.Relayer, maxRequestBodySize int64) *Server {
 	return &Server{
-		forwardOhttpConfigs: true,
-		streaming:           false,
-		relayer:             relayer,
-		maxRequestBodySize:  maxRequestBodySize,
+		serveGatewayOhttpConfigs: false,
+		streaming:                false,
+		relayer:                  relayer,
+		maxRequestBodySize:       maxRequestBodySize,
 	}
 }
 
@@ -109,9 +109,18 @@ func (s *Server) Process(srv extProcPb.ExternalProcessor_ProcessServer) error {
 			if st.host == "" {
 				st.host = strings.ToLower(extractHeaderValue(v, "host"))
 			}
-			if s.forwardOhttpConfigs {
-				if v := extractHeaderValue(v, ":path"); v == ohttpConfigsPath {
-					st.path = v
+			if s.serveGatewayOhttpConfigs {
+				if p := extractHeaderValue(v, ":path"); p == ohttpConfigsPath {
+					if st.httpMethod != "get" {
+						responses = immediateErrorResponse(logger, http.StatusMethodNotAllowed, "GET method required for OHTTP configs")
+						goto SendResponses
+					}
+					acceptHeader := strings.ToLower(extractHeaderValue(v, "accept"))
+					if acceptHeader != "application/ohttp-keys" {
+						responses = immediateErrorResponse(logger, http.StatusBadRequest, "Accept header must be application/ohttp-keys for OHTTP configs")
+						goto SendResponses
+					}
+					st.configRequest = true
 				}
 			}
 			st.reqContentType = extractHeaderValue(v, "content-type")
@@ -176,13 +185,15 @@ func (s *Server) Process(srv extProcPb.ExternalProcessor_ProcessServer) error {
 
 type streamState struct {
 	host           string
-	path           string
+	configRequest  bool
 	reqContentType string
 	httpMethod     string
 	body           []byte
 }
 
 func (s *Server) forwardAndRespond(ctx context.Context, logger logr.Logger, st *streamState) ([]*extProcPb.ProcessingResponse, error) {
+	if st.configRequest {
+	}
 	logger.V(logutil.DEFAULT).Info("Forwarding request to gateway")
 
 	// Ensure content type is OHTTP req, but allow missing
@@ -192,7 +203,7 @@ func (s *Server) forwardAndRespond(ctx context.Context, logger logr.Logger, st *
 		contentType = st.reqContentType
 	}
 
-	resp, err := s.relayer.Relay(ctx, st.host, st.path, st.body, contentType, st.httpMethod)
+	resp, err := s.relayer.Relay(ctx, st.host, st.body, contentType, st.httpMethod)
 	if err != nil {
 		// Check if it's a "no gateway mapping" error or other relay error
 		if errors.Is(err, relay.ErrNoGateway) {
