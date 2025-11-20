@@ -12,7 +12,7 @@ require (
 	github.com/prometheus/common v0.67.2 // indirect
 	go.opentelemetry.io/otel v1.38.0
 	go.uber.org/multierr v1.11.0 // indirect
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.27.1
 	golang.org/x/sync v0.18.0
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10 // indirect
