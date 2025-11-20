@@ -16,10 +16,6 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const (
-	defaultKey = "gateway:url"
-)
-
 func main() {
 	var (
 		redisAddr      = flag.String("redis-addr", envOr("REDIS_ADDR", "redis:6379"), "Redis address host:port")

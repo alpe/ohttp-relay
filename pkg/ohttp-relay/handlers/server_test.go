@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/relay"
 	envoyCorev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	extProcPb "github.com/envoyproxy/go-control-plane/envoy/service/ext_proc/v3"
@@ -15,6 +16,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// initialize metrics before running tests to avoid panics
+var _ = metrics.InitMetrics()
 
 func TestForwardAndRespond_Success(t *testing.T) {
 	relayer := &mockRelayer{
@@ -149,4 +153,16 @@ func TestExtractHeaderValue(t *testing.T) {
 	assert.Equal(t, "application/json", extractHeaderValue(req, "content-type"))
 	assert.Equal(t, "EXAMPLE.test", extractHeaderValue(req, ":AUTHORITY"))
 	assert.Equal(t, "", extractHeaderValue(req, "missing"))
+}
+
+// mockRelayer is a simple mock for testing.
+type mockRelayer struct {
+	relayFunc func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error)
+}
+
+func (m *mockRelayer) Relay(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+	if m.relayFunc != nil {
+		return m.relayFunc(ctx, host, body, contentType, method)
+	}
+	return nil, nil
 }

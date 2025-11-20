@@ -139,7 +139,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "read request body", http.StatusInternalServerError)
 		return
 	}
-	defer r.Body.Close()
+	defer r.Body.Close() // nolint: errcheck
 
 	// Retrieve captured outer headers (pre-OHTTP) from context, if available
 	outerHeaders := outerHeadersFromContext(r.Context())

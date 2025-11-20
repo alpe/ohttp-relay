@@ -61,7 +61,7 @@ func (s *Server) Process(srv extProcPb.ExternalProcessor_ProcessServer) error {
 	start := time.Now()
 	st := &streamState{}
 	var reqSize, respSize int64
-	var statusCode int = 200 // Default to 200 if not set (though we usually set it)
+	var statusCode = 200 // Default to 200 if not set (though we usually set it)
 
 	// Defer recording of final metrics
 	defer func() {
@@ -191,7 +191,7 @@ func (s *Server) forwardAndRespond(ctx context.Context, logger logr.Logger, st *
 		return immediateErrorResponse(logger, http.StatusBadGateway, fmt.Sprintf("relay request failed: %v", err)), nil
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 	respBytes, readErr := io.ReadAll(resp.Body)
 	if readErr != nil {
 		return immediateErrorResponse(logger, http.StatusBadGateway, fmt.Sprintf("failed reading relay response: %v", readErr)), nil
