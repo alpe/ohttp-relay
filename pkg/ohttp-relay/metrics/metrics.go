@@ -36,7 +36,7 @@ var (
 func InitMetrics() error {
 	exporter, err := otelprom.New()
 	if err != nil {
-		return fmt.Errorf("failed to create prometheus exporter: %w", err)
+		return fmt.Errorf("create prometheus exporter: %w", err)
 	}
 
 	provider := sdkmetric.NewMeterProvider(

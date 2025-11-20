@@ -128,12 +128,12 @@ func main() {
 func readKeyConfigFile(name string) (ohttp.KeyConfig, error) {
 	data, err := os.ReadFile(name)
 	if err != nil {
-		return ohttp.KeyConfig{}, fmt.Errorf("failed to read file: %w", err)
+		return ohttp.KeyConfig{}, fmt.Errorf("read file: %w", err)
 	}
 
 	kc, err := config.UnmarshalKeyConfig(data)
 	if err != nil {
-		return ohttp.KeyConfig{}, fmt.Errorf("failed to unmarshal binary: %w", err)
+		return ohttp.KeyConfig{}, fmt.Errorf("unmarshal binary: %w", err)
 	}
 	return *kc, nil
 }

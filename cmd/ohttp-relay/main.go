@@ -71,7 +71,7 @@ func run() error {
 	setupLog.Info("Flags processed", "flags", flags)
 
 	if err := metrics.InitMetrics(); err != nil {
-		return fmt.Errorf("failed to init metrics: %w", err)
+		return fmt.Errorf("init metrics: %w", err)
 	}
 
 	wg, ctx := errgroup.WithContext(ctrl.SetupSignalHandler())
