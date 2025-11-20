@@ -57,9 +57,6 @@ func main() {
 	log.Printf("running gateway on :%s (config=%s, priv=%s)...", port, keyConfigPath, privKeyPath)
 
 	mux := http.NewServeMux()
-	// The main OHTTP handler
-	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(handler)))
-	mux.Handle("/", h)
 
 	// The key configuration endpoint
 	mux.HandleFunc("/.well-known/ohttp-configs", func(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +74,9 @@ func main() {
 			log.Printf("failed to write key config response: %v", err)
 		}
 	})
+	// The main OHTTP handler
+	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(handler)))
+	mux.Handle("/", h)
 
 	// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
 	srv := &http.Server{Addr: ":" + port, Handler: mux}
