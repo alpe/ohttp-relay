@@ -15,7 +15,7 @@ var ErrNoGateway = fmt.Errorf("no gateway found")
 
 // Relayer defines the interface for relaying requests to a gateway.
 type Relayer interface {
-	Relay(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error)
+	Relay(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error)
 }
 
 // HTTPRelayer implements Relayer using an http.Client.
@@ -39,7 +39,7 @@ func NewHTTPRelayer(gatewaySource GatewaySource, timeout time.Duration) *HTTPRel
 }
 
 // Relay forwards the request to the configured gateway.
-func (r *HTTPRelayer) Relay(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+func (r *HTTPRelayer) Relay(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 	start := time.Now()
 	// Determine gateway by host
 	gwURL, err := r.gatewaySource.Get(host)
@@ -51,7 +51,12 @@ func (r *HTTPRelayer) Relay(ctx context.Context, host string, body []byte, conte
 	}
 
 	// Build a fresh HTTP request to the gateway.
-	req, err := http.NewRequestWithContext(ctx, method, gwURL, io.NopCloser(strings.NewReader(string(body))))
+	targetURL := gwURL
+	if path != "" {
+		targetURL = gwURL + path
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, targetURL, io.NopCloser(strings.NewReader(string(body))))
 	if err != nil {
 		return nil, fmt.Errorf("build relay request: %w", err)
 	}

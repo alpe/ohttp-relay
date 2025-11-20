@@ -24,7 +24,7 @@ import (
 
 func TestProcess_happy(t *testing.T) {
 	relayer := &mockRelayer{
-		relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+		relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 			// Return a mock response
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -68,7 +68,7 @@ func TestProcess_happy(t *testing.T) {
 
 func TestProcess_chunkedBody_noEarlyResponse(t *testing.T) {
 	relayer := &mockRelayer{
-		relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+		relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 			// Return a mock response
 			return &http.Response{
 				StatusCode: http.StatusOK,
@@ -188,7 +188,7 @@ func TestProcess_BodySizeLimit(t *testing.T) {
 func TestForwardAndRespond_ErrorSanitization(t *testing.T) {
 	// Relayer that returns an error
 	relayer := &mockRelayer{
-		relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+		relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 			return nil, errors.New("internal sensitive error")
 		},
 	}

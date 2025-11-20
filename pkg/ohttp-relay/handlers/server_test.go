@@ -22,7 +22,7 @@ var _ = metrics.InitMetrics()
 
 func TestForwardAndRespond_Success(t *testing.T) {
 	relayer := &mockRelayer{
-		relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+		relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 			// Verify the parameters passed to the relayer
 			assert.Equal(t, "example.test", host)
 			assert.Equal(t, []byte("opaque"), body)
@@ -79,7 +79,7 @@ func TestForwardAndRespond_NoMappingAndErrors(t *testing.T) {
 	}{
 		"no mapping": {
 			relayer: &mockRelayer{
-				relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+				relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 					return nil, relay.ErrNoGateway
 				},
 			},
@@ -87,7 +87,7 @@ func TestForwardAndRespond_NoMappingAndErrors(t *testing.T) {
 		},
 		"mapping error": {
 			relayer: &mockRelayer{
-				relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+				relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 					return nil, assert.AnError
 				},
 			},
@@ -119,7 +119,7 @@ func TestForwardAndRespond_NoMappingAndErrors(t *testing.T) {
 
 func TestForwardAndRespond_GatewayNon2xx(t *testing.T) {
 	relayer := &mockRelayer{
-		relayFunc: func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+		relayFunc: func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 			return &http.Response{
 				StatusCode: http.StatusBadGateway,
 				Header:     http.Header{},
@@ -157,12 +157,12 @@ func TestExtractHeaderValue(t *testing.T) {
 
 // mockRelayer is a simple mock for testing.
 type mockRelayer struct {
-	relayFunc func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error)
+	relayFunc func(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error)
 }
 
-func (m *mockRelayer) Relay(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error) {
+func (m *mockRelayer) Relay(ctx context.Context, host, path string, body []byte, contentType string, method string) (*http.Response, error) {
 	if m.relayFunc != nil {
-		return m.relayFunc(ctx, host, body, contentType, method)
+		return m.relayFunc(ctx, host, path, body, contentType, method)
 	}
 	return nil, nil
 }
