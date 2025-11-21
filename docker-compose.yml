@@ -19,12 +19,12 @@ services:
       - ohttpnet
 
   # External Processing gRPC server used by Envoy to relay opaque OHTTP blobs
-  ohttprelay:
+  ohttp-relay:
     build:
       context: .
-      dockerfile: cmd/ohttprelay/Dockerfile
-    image: alpetest/ohttprelay:local
-    container_name: ohttprelay
+      dockerfile: cmd/ohttp-relay/Dockerfile
+    image: alpetest/ohttp-relay:local
+    container_name: ohttp-relay
     command:
       - "--grpc-port=9006"
       - "--grpc-health-port=9007"
@@ -66,7 +66,7 @@ services:
     networks:
       - ohttpnet
 
-  # Envoy Proxy configured to call the ext_proc server (ohttprelay)
+  # Envoy Proxy configured to call the ext_proc server (ohttp-relay)
   envoy:
     image: envoyproxy/envoy:v1.36-latest
     container_name: envoy
@@ -77,7 +77,7 @@ services:
       - "7777:7777"   # Public HTTP port for OHTTP clients (matches test-client default RELAY_URL)
       - "9901:9901"   # Envoy admin
     depends_on:
-      - ohttprelay
+      - ohttp-relay
     networks:
       - ohttpnet
 

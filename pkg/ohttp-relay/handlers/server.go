@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
 	envoyCorev3 "github.com/envoyproxy/go-control-plane/envoy/config/core/v3"
 	extProcPb "github.com/envoyproxy/go-control-plane/envoy/service/ext_proc/v3"
 	envoyTypePb "github.com/envoyproxy/go-control-plane/envoy/type/v3"
@@ -17,9 +17,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/relay"
-	logutil "github.com/alpe/ohttprelay/pkg/ohttprelay/util/logging"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/relay"
+	logutil "github.com/alpe/ohttp-relay/pkg/ohttp-relay/util/logging"
 )
 
 // Media types per RFC 9458 / OHTTP
@@ -28,6 +28,8 @@ const (
 	ContentTypeOHTTPRes = "message/ohttp-res"
 )
 
+const ohttpConfigsPath = "/.well-known/ohttp-configs"
+
 // Source moved to package gateway.
 
 // Server is a minimal ExternalProcessor that acts as an OHTTP Relay.
@@ -35,17 +37,19 @@ const (
 // returns the opaque response back to Envoy. No decryption takes place here.
 // This is a buffered implementation: we wait for EndOfStream before forwarding.
 type Server struct {
-	streaming          bool
-	relayer            relay.Relayer
-	maxRequestBodySize int64
+	streaming                bool
+	relayer                  relay.Relayer
+	maxRequestBodySize       int64
+	serveGatewayOhttpConfigs bool
 }
 
 // NewServer constructs a new OHTTP relay handler.
 func NewServer(relayer relay.Relayer, maxRequestBodySize int64) *Server {
 	return &Server{
-		streaming:          false,
-		relayer:            relayer,
-		maxRequestBodySize: maxRequestBodySize,
+		serveGatewayOhttpConfigs: false,
+		streaming:                false,
+		relayer:                  relayer,
+		maxRequestBodySize:       maxRequestBodySize,
 	}
 }
 
@@ -61,7 +65,7 @@ func (s *Server) Process(srv extProcPb.ExternalProcessor_ProcessServer) error {
 	start := time.Now()
 	st := &streamState{}
 	var reqSize, respSize int64
-	var statusCode int = 200 // Default to 200 if not set (though we usually set it)
+	var statusCode = 200 // Default to 200 if not set (though we usually set it)
 
 	// Defer recording of final metrics
 	defer func() {
@@ -104,6 +108,20 @@ func (s *Server) Process(srv extProcPb.ExternalProcessor_ProcessServer) error {
 			st.host = strings.ToLower(extractHeaderValue(v, ":authority"))
 			if st.host == "" {
 				st.host = strings.ToLower(extractHeaderValue(v, "host"))
+			}
+			if s.serveGatewayOhttpConfigs {
+				if p := extractHeaderValue(v, ":path"); p == ohttpConfigsPath {
+					if st.httpMethod != "get" {
+						responses = immediateErrorResponse(logger, http.StatusMethodNotAllowed, "GET method required for OHTTP configs")
+						goto SendResponses
+					}
+					acceptHeader := strings.ToLower(extractHeaderValue(v, "accept"))
+					if acceptHeader != "application/ohttp-keys" {
+						responses = immediateErrorResponse(logger, http.StatusBadRequest, "Accept header must be application/ohttp-keys for OHTTP configs")
+						goto SendResponses
+					}
+					st.configRequest = true
+				}
 			}
 			st.reqContentType = extractHeaderValue(v, "content-type")
 			// no response for headers
@@ -167,12 +185,15 @@ func (s *Server) Process(srv extProcPb.ExternalProcessor_ProcessServer) error {
 
 type streamState struct {
 	host           string
+	configRequest  bool
 	reqContentType string
 	httpMethod     string
 	body           []byte
 }
 
 func (s *Server) forwardAndRespond(ctx context.Context, logger logr.Logger, st *streamState) ([]*extProcPb.ProcessingResponse, error) {
+	if st.configRequest {
+	}
 	logger.V(logutil.DEFAULT).Info("Forwarding request to gateway")
 
 	// Ensure content type is OHTTP req, but allow missing
@@ -191,7 +212,7 @@ func (s *Server) forwardAndRespond(ctx context.Context, logger logr.Logger, st *
 		return immediateErrorResponse(logger, http.StatusBadGateway, fmt.Sprintf("relay request failed: %v", err)), nil
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint: errcheck
 	respBytes, readErr := io.ReadAll(resp.Body)
 	if readErr != nil {
 		return immediateErrorResponse(logger, http.StatusBadGateway, fmt.Sprintf("failed reading relay response: %v", readErr)), nil

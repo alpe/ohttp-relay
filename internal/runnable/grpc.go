@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
 	"google.golang.org/grpc"
 )
 

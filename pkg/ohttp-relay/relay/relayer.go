@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 )
 
 var ErrNoGateway = fmt.Errorf("no gateway found")
@@ -44,16 +44,17 @@ func (r *HTTPRelayer) Relay(ctx context.Context, host string, body []byte, conte
 	// Determine gateway by host
 	gwURL, err := r.gatewaySource.Get(host)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get gateway mapping for host %q: %w", host, err)
+		return nil, fmt.Errorf("get gateway mapping for host %q: %w", host, err)
 	}
 	if gwURL == "" {
 		return nil, fmt.Errorf("host  %q: %w", host, ErrNoGateway)
 	}
 
 	// Build a fresh HTTP request to the gateway.
-	req, err := http.NewRequestWithContext(ctx, method, gwURL, io.NopCloser(strings.NewReader(string(body))))
+	targetURL := gwURL
+	req, err := http.NewRequestWithContext(ctx, method, targetURL, io.NopCloser(strings.NewReader(string(body))))
 	if err != nil {
-		return nil, fmt.Errorf("failed to build relay request: %w", err)
+		return nil, fmt.Errorf("build relay request: %w", err)
 	}
 
 	// Ensure a clean header map and set only the required content-type.

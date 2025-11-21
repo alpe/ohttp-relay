@@ -243,14 +243,8 @@ func (s *server) handleSnapshot(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("redis scan error: %v", err), http.StatusInternalServerError)
 		return
 	}
+
 	// Fetch values and TTLs using pipeline for efficiency
-	type kv struct {
-		key    string
-		val    string
-		ttl    time.Duration
-		ttlErr error
-		valErr error
-	}
 	items := make([]GatewayEntry, 0, len(keys))
 	if len(keys) > 0 {
 		pipe := s.rdb.Pipeline()
@@ -318,13 +312,13 @@ func (s *server) routes() chi.Router {
 	// Health check
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("ok"))
+		_, _ = w.Write([]byte("ok"))
 	})
 	return r
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json") //nolint:errcheck
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
 }

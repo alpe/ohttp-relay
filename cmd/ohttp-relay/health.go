@@ -9,7 +9,7 @@ import (
 	healthPb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
-	logutil "github.com/alpe/ohttprelay/pkg/ohttprelay/util/logging"
+	logutil "github.com/alpe/ohttp-relay/pkg/ohttp-relay/util/logging"
 )
 
 type healthServer struct {

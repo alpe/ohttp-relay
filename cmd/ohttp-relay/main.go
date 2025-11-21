@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
-	"github.com/alpe/ohttprelay/internal/runnable"
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/gateway"
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/metrics"
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/relay"
-	runserver "github.com/alpe/ohttprelay/pkg/ohttprelay/server"
-	"github.com/alpe/ohttprelay/pkg/ohttprelay/util/logging"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/internal/runnable"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/gateway"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/relay"
+	runserver "github.com/alpe/ohttp-relay/pkg/ohttp-relay/server"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/util/logging"
 	"github.com/go-logr/zapr"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	uberzap "go.uber.org/zap"
@@ -71,7 +71,7 @@ func run() error {
 	setupLog.Info("Flags processed", "flags", flags)
 
 	if err := metrics.InitMetrics(); err != nil {
-		return fmt.Errorf("failed to init metrics: %w", err)
+		return fmt.Errorf("init metrics: %w", err)
 	}
 
 	wg, ctx := errgroup.WithContext(ctrl.SetupSignalHandler())

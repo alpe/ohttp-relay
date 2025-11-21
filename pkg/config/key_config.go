@@ -81,7 +81,7 @@ func UnmarshalKeyConfig(data []byte) (*ohttp.KeyConfig, error) {
 	if err != nil {
 		return nil, fmt.Errorf("public key: %w", err)
 	}
-	if pK == nil || len(pK) == 0 {
+	if len(pK) == 0 {
 		return nil, fmt.Errorf("empty public key")
 	}
 	kc := ohttp.KeyConfig{KeyID: y.KeyID, KemID: nameToKemID[y.Kem]}

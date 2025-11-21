@@ -17,8 +17,8 @@ import (
 
 	"maps"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
-	"github.com/alpe/ohttprelay/pkg/config"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/pkg/config"
 	"github.com/cloudflare/circl/hpke"
 	"github.com/cloudflare/circl/kem"
 	"github.com/confidentsecurity/ohttp"
@@ -57,9 +57,6 @@ func main() {
 	log.Printf("running gateway on :%s (config=%s, priv=%s)...", port, keyConfigPath, privKeyPath)
 
 	mux := http.NewServeMux()
-	// The main OHTTP handler
-	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(handler)))
-	mux.Handle("/", h)
 
 	// The key configuration endpoint
 	mux.HandleFunc("/.well-known/ohttp-configs", func(w http.ResponseWriter, r *http.Request) {
@@ -77,6 +74,9 @@ func main() {
 			log.Printf("failed to write key config response: %v", err)
 		}
 	})
+	// The main OHTTP handler
+	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(handler)))
+	mux.Handle("/", h)
 
 	// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
 	srv := &http.Server{Addr: ":" + port, Handler: mux}
@@ -139,7 +139,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "read request body", http.StatusInternalServerError)
 		return
 	}
-	defer r.Body.Close()
+	defer r.Body.Close() // nolint: errcheck
 
 	// Retrieve captured outer headers (pre-OHTTP) from context, if available
 	outerHeaders := outerHeadersFromContext(r.Context())
