@@ -22,7 +22,7 @@ require github.com/go-logr/zapr v1.3.0
 
 require (
 	github.com/cloudflare/circl v1.6.1
-	github.com/confidentsecurity/ohttp v0.0.15
+	github.com/confidentsecurity/ohttp v0.0.21
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/redis/go-redis/v9 v9.17.0
 	github.com/stretchr/testify v1.11.1
@@ -35,8 +35,8 @@ require (
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cncf/xds/go v0.0.0-20251110193048-8bfbf64dc13e // indirect
-	github.com/confidentsecurity/bhttp v0.0.13 // indirect
-	github.com/confidentsecurity/twoway v0.0.13 // indirect
+	github.com/confidentsecurity/bhttp v0.0.16 // indirect
+	github.com/confidentsecurity/twoway v0.0.16 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
