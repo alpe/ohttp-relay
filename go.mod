@@ -24,7 +24,7 @@ require (
 	github.com/cloudflare/circl v1.6.1
 	github.com/confidentsecurity/ohttp v0.0.15
 	github.com/go-chi/chi/v5 v5.2.3
-	github.com/redis/go-redis/v9 v9.17.0
+	github.com/redis/go-redis/v9 v9.17.1
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/otel/exporters/prometheus v0.60.0
 	go.opentelemetry.io/otel/metric v1.38.0
