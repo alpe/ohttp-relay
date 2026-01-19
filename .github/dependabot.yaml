@@ -5,7 +5,9 @@ updates:
     schedule:
       interval: daily
       time: "01:00"
-
+    groups:
+      all-go:
+        patterns: ["*"]
   - package-ecosystem: "docker"
     directory: "/cmd/echo-gateway"
     schedule:
@@ -21,4 +23,10 @@ updates:
     schedule:
       interval: daily
       time: "01:00"
+    groups:
+      patch-updates:
+        applies-to: version-updates
+        update-types:
+          - "patch"
+          - "minor"
 
