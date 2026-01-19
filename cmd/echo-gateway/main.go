@@ -17,11 +17,13 @@ import (
 
 	"maps"
 
-	"github.com/alpe/ohttprelay/internal/ctrl"
-	"github.com/alpe/ohttprelay/pkg/config"
+	"github.com/alpe/ohttp-relay/internal/ctrl"
+	"github.com/alpe/ohttp-relay/pkg/echo-gateway/keyconfig"
+	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 	"github.com/cloudflare/circl/hpke"
 	"github.com/cloudflare/circl/kem"
 	"github.com/confidentsecurity/ohttp"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -56,29 +58,18 @@ func main() {
 	port := envOr("GATEWAY_PORT", "8888")
 	log.Printf("running gateway on :%s (config=%s, priv=%s)...", port, keyConfigPath, privKeyPath)
 
+	if err := metrics.InitMetrics(); err != nil {
+		log.Fatalf("init metrics: %v", err)
+	}
+
 	mux := http.NewServeMux()
+	// The key configuration endpoint
+	mux.HandleFunc("/.well-known/ohttp-configs", handleWellKnownKeyConfig(keyPair.KeyConfig))
+	mux.Handle("/metrics", promhttp.Handler())
 	// The main OHTTP handler
-	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(handler)))
+	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(echoHandler)))
 	mux.Handle("/", h)
 
-	// The key configuration endpoint
-	mux.HandleFunc("/.well-known/ohttp-configs", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/ohttp-keys")
-		configBytes, err := keyPair.KeyConfig.MarshalBinary()
-		if err != nil {
-			http.Error(w, "failed to marshal key config", http.StatusInternalServerError)
-			return
-		}
-		buf := make([]byte, 2+len(configBytes))
-		binary.BigEndian.PutUint16(buf[:2], uint16(len(configBytes)))
-		copy(buf[2:], configBytes)
-
-		if _, err := w.Write(buf); err != nil {
-			log.Printf("failed to write key config response: %v", err)
-		}
-	})
-
-	// nosemgrep: go.lang.security.audit.net.use-tls.use-tls
 	srv := &http.Server{Addr: ":" + port, Handler: mux}
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
@@ -94,6 +85,25 @@ func main() {
 	}
 	log.Println("server gracefully stopped")
 
+}
+
+func handleWellKnownKeyConfig(keyConfig ohttp.KeyConfig) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("serving key config")
+		w.Header().Set("Content-Type", "application/ohttp-keys")
+		configBytes, err := keyConfig.MarshalBinary()
+		if err != nil {
+			http.Error(w, "failed to marshal key config", http.StatusInternalServerError)
+			return
+		}
+		buf := make([]byte, 2+len(configBytes))
+		binary.BigEndian.PutUint16(buf[:2], uint16(len(configBytes)))
+		copy(buf[2:], configBytes)
+
+		if _, err := w.Write(buf); err != nil {
+			log.Printf("failed to write key config response: %v", err)
+		}
+	}
 }
 
 func genKeyCmd() {
@@ -132,14 +142,14 @@ func genKeyCmd() {
 }
 
 // the request passed is the inner request decoded by ohttp
-func handler(w http.ResponseWriter, r *http.Request) {
+func echoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s request for %s\n", r.Method, r.URL.Path)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "read request body", http.StatusInternalServerError)
 		return
 	}
-	defer r.Body.Close()
+	defer r.Body.Close() // nolint: errcheck
 
 	// Retrieve captured outer headers (pre-OHTTP) from context, if available
 	outerHeaders := outerHeadersFromContext(r.Context())
@@ -196,7 +206,7 @@ func outerHeadersFromContext(ctx context.Context) http.Header {
 }
 
 func writeKeyConfigFile(name string, kc ohttp.KeyConfig) error {
-	data, err := config.MarshalKeyConfig(kc)
+	data, err := keyconfig.MarshalKeyConfig(kc)
 	if err != nil {
 		return fmt.Errorf("marshal keyconfig to binary: %w", err)
 	}
@@ -241,7 +251,7 @@ func readKeyConfigFile(name string) (*ohttp.KeyConfig, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read keyconfig file: %w", err)
 	}
-	if kc, err = config.UnmarshalKeyConfig(b); err != nil {
+	if kc, err = keyconfig.UnmarshalKeyConfig(b); err != nil {
 		return nil, fmt.Errorf("parse keyconfig: %w", err)
 	}
 	return kc, nil

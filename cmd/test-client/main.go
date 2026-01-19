@@ -11,14 +11,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/alpe/ohttprelay/pkg/config"
+	"github.com/alpe/ohttp-relay/pkg/echo-gateway/keyconfig"
 	"github.com/confidentsecurity/ohttp"
 )
 
 const (
 	defaultKeyConfigPath = "keyconfig-ohttp.yaml"
-	defaultRelayURL      = "http://127.0.0.1:7777"
-	defaultGatewayURL    = "http://127.0.0.1:8888"
+	defaultRelayURL      = "http://localhost:7777"
+	defaultGatewayURL    = "http://localhost:8888"
 )
 
 const (
@@ -128,12 +128,12 @@ func main() {
 func readKeyConfigFile(name string) (ohttp.KeyConfig, error) {
 	data, err := os.ReadFile(name)
 	if err != nil {
-		return ohttp.KeyConfig{}, fmt.Errorf("failed to read file: %w", err)
+		return ohttp.KeyConfig{}, fmt.Errorf("read file: %w", err)
 	}
 
-	kc, err := config.UnmarshalKeyConfig(data)
+	kc, err := keyconfig.UnmarshalKeyConfig(data)
 	if err != nil {
-		return ohttp.KeyConfig{}, fmt.Errorf("failed to unmarshal binary: %w", err)
+		return ohttp.KeyConfig{}, fmt.Errorf("unmarshal binary: %w", err)
 	}
 	return *kc, nil
 }
@@ -152,7 +152,12 @@ func fetchKeyConfig(base string) (ohttp.KeyConfig, error) {
 	url += "/.well-known/ohttp-configs"
 
 	hc := &http.Client{Timeout: 5 * time.Second}
-	resp, err := hc.Get(url)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return ohttp.KeyConfig{}, fmt.Errorf("create request: %w", err)
+	}
+	req.Header.Set("Accept", "application/ohttp-keys")
+	resp, err := hc.Do(req)
 	if err != nil {
 		return ohttp.KeyConfig{}, fmt.Errorf("get %s: %w", url, err)
 	}

@@ -1,4 +1,4 @@
-module github.com/alpe/ohttprelay
+module github.com/alpe/ohttp-relay
 
 go 1.25.4
 
@@ -21,9 +21,9 @@ require (
 require github.com/go-logr/zapr v1.3.0
 
 require (
+	github.com/alicebob/miniredis/v2 v2.35.0
 	github.com/cloudflare/circl v1.6.1
 	github.com/confidentsecurity/ohttp v0.0.15
-	github.com/go-chi/chi/v5 v5.2.3
 	github.com/redis/go-redis/v9 v9.17.0
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/otel/exporters/prometheus v0.60.0
@@ -49,6 +49,7 @@ require (
 	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/quic-go/quic-go v0.56.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
+	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel/sdk v1.38.0 // indirect
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect

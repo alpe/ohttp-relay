@@ -35,7 +35,7 @@ func TestKeyConfigEndpoint(t *testing.T) {
 	}
 
 	mux := http.NewServeMux()
-	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(handler)))
+	h := captureOuterHeadersMiddleware(ohttp.Middleware(gateway, http.HandlerFunc(echoHandler)))
 	mux.Handle("/", h)
 
 	mux.HandleFunc("/.wellknown/ohttp-configs", func(w http.ResponseWriter, r *http.Request) {

@@ -78,7 +78,8 @@ e2e: ## Full e2e flow: build images, start stack, run client, teardown
 	trap '$(COMPOSE) logs > e2e-logs.txt || true; $(COMPOSE) down -v || true' EXIT; \
 	$(MAKE) e2e-build; \
 	$(MAKE) e2e-up; \
-	$(MAKE) e2e-test
+	$(MAKE) e2e-test; \
+	$(MAKE) e2e-down
 .PHONY: e2e
 
 fmt: ## Format Go sources

@@ -1,11 +1,13 @@
 # OHTTP Relay
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/alpe/ohttprelay)](https://goreportcard.com/report/github.com/alpe/ohttprelay)
+[![Go Report Card](https://goreportcard.com/badge/github.com/alpe/ohttp-relay)](https://goreportcard.com/report/github.com/alpe/ohttp-relay)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 The **OHTTP Relay** is an [Envoy External Processor (ext_proc)](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_proc_filter) that enables privacy-preserving communication by forwarding [Oblivious HTTP (OHTTP)](https://datatracker.ietf.org/doc/rfc9458/) encapsulated requests to a configured gateway.
 
 It acts strictly as a relay: it does not decrypt or interpret the payload, ensuring that the relay sees only the source IP and the gateway sees only the encrypted message.
+
+> **Official Documentation & Demo:** [orelay.dev](https://orelay.dev)
 
 ## Features
 
@@ -45,9 +47,10 @@ make build
 | `--grpc-port` | Port for gRPC communication with Envoy | `9006` |
 | `--metrics-port` | Port for Prometheus metrics | `9090` |
 | `--gateway-urls` | Comma-separated `domain:url` mappings | `""` |
-| `--default-gateway-url` | Fallback gateway URL | `""` |
+
 | `--timeout` | Timeout for upstream gateway requests | `9s` |
 | `--redis-enable` | Enable Redis for dynamic config | `false` |
+
 
 ## Envoy Configuration
 
@@ -83,6 +86,8 @@ clusters:
               address: 127.0.0.1
               port_value: 9006
 ```
+
+
 
 ## Contributing
 

@@ -10,7 +10,7 @@ services:
       KEY_CONFIG_FILE: /keys/keyconfig-ohttp.yaml
       PRIVATE_KEY_FILE: /keys/ohttp-gateway.key
       GATEWAY_PORT: "8888"
-    command: [ ]
+    command: []
     volumes:
       - ./dev/testkeys:/keys:ro
     ports:
@@ -19,27 +19,27 @@ services:
       - ohttpnet
 
   # External Processing gRPC server used by Envoy to relay opaque OHTTP blobs
-  ohttprelay:
+  ohttp-relay:
     build:
       context: .
-      dockerfile: cmd/ohttprelay/Dockerfile
-    image: alpetest/ohttprelay:local
-    container_name: ohttprelay
+      dockerfile: cmd/ohttp-relay/Dockerfile
+    image: alpetest/ohttp-relay:local
+    container_name: ohttp-relay
     command:
       - "--grpc-port=9006"
       - "--grpc-health-port=9007"
       - "--metrics-port=9090"
       - "--timeout=9s"
-      - "--default-gateway-url=http://echo-gateway:8888"
+      - "--gateway-urls=localhost:http://echo-gateway:8888,envoy:http://echo-gateway:8888,envoy:7777=http://echo-gateway:8888,localhost:7777=http://echo-gateway:8888"
       - "--redis-enable=true"
       - "--redis-addr=redis:6379"
       - "--redis-password="
       - "--redis-db=0"
       - "--v=5"
     ports:
-      - "9006:9006"   # gRPC (TLS)
-      - "9007:9007"   # gRPC health
-      - "9090:9090"   # metrics
+      - "9006:9006" # gRPC (TLS)
+      - "9007:9007" # gRPC health
+      - "9090:9090" # metrics
     depends_on:
       - echo-gateway
       - redis
@@ -47,26 +47,8 @@ services:
       - ohttpnet
 
   # Simple registry to store and expose the gateway URL in Redis
-  gateway-registry:
-    build:
-      context: .
-      dockerfile: cmd/gateway-registry/Dockerfile
-    image: alpetest/gateway-registry:local
-    container_name: gateway-registry
-    command:
-      - "--default-gateway-url=http://echo-gateway:8888"
-      - "--redis-addr=redis:6379"
-      - "--redis-password="
-      - "--redis-db=0"
-      - "--listen=:8080"
-    ports:
-      - "8080:8080"   # HTTP API for setting/getting the gateway URL
-    depends_on:
-      - redis
-    networks:
-      - ohttpnet
 
-  # Envoy Proxy configured to call the ext_proc server (ohttprelay)
+  # Envoy Proxy configured to call the ext_proc server (ohttp-relay)
   envoy:
     image: envoyproxy/envoy:v1.36-latest
     container_name: envoy
@@ -74,10 +56,10 @@ services:
       - ./dev/envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
     command: [ "envoy", "-c", "/etc/envoy/envoy.yaml" ]
     ports:
-      - "7777:7777"   # Public HTTP port for OHTTP clients (matches test-client default RELAY_URL)
-      - "9901:9901"   # Envoy admin
+      - "7777:7777" # Public HTTP port for OHTTP clients (matches test-client default RELAY_URL)
+      - "9901:9901" # Envoy admin
     depends_on:
-      - ohttprelay
+      - ohttp-relay
     networks:
       - ohttpnet
 
@@ -88,7 +70,6 @@ services:
       - "6379:6379"
     networks:
       - ohttpnet
-
     # Simple OHTTP client for manual testing
     # Disabled by default; enable via:
     # docker compose --profile client up test-client-rly
