@@ -21,8 +21,8 @@ require (
 require github.com/go-logr/zapr v1.3.0
 
 require (
-	github.com/alicebob/miniredis/v2 v2.35.0
-	github.com/cloudflare/circl v1.6.2
+	github.com/alicebob/miniredis/v2 v2.36.0
+	github.com/cloudflare/circl v1.6.3
 	github.com/confidentsecurity/ohttp v0.0.15
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/stretchr/testify v1.11.1
