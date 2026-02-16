@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/cloudflare/circl/hpke"
-	"github.com/confidentsecurity/ohttp"
+	"github.com/openpcc/ohttp"
 )
 
 func TestKeyConfigEndpoint(t *testing.T) {

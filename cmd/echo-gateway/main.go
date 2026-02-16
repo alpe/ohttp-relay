@@ -22,7 +22,7 @@ import (
 	"github.com/alpe/ohttp-relay/pkg/ohttp-relay/metrics"
 	"github.com/cloudflare/circl/hpke"
 	"github.com/cloudflare/circl/kem"
-	"github.com/confidentsecurity/ohttp"
+	"github.com/openpcc/ohttp"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

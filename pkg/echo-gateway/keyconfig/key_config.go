@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cloudflare/circl/hpke"
-	"github.com/confidentsecurity/ohttp"
+	"github.com/openpcc/ohttp"
 	"gopkg.in/yaml.v3"
 )
 
