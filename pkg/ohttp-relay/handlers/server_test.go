@@ -155,6 +155,25 @@ func TestExtractHeaderValue(t *testing.T) {
 	assert.Equal(t, "", extractHeaderValue(req, "missing"))
 }
 
+func FuzzExtractHeaderValue(f *testing.F) {
+	f.Add("content-type", "application/json")
+	f.Add(":authority", "example.com")
+	f.Add("missing", "")
+
+	f.Fuzz(func(t *testing.T, key string, val string) {
+		req := &extProcPb.ProcessingRequest_RequestHeaders{
+			RequestHeaders: &extProcPb.HttpHeaders{
+				Headers: &envoyCorev3.HeaderMap{
+					Headers: []*envoyCorev3.HeaderValue{
+						{Key: key, RawValue: []byte(val)},
+					},
+				},
+			},
+		}
+		_ = extractHeaderValue(req, key)
+	})
+}
+
 // mockRelayer is a simple mock for testing.
 type mockRelayer struct {
 	relayFunc func(ctx context.Context, host string, body []byte, contentType string, method string) (*http.Response, error)

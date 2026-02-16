@@ -3,9 +3,15 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/alpe/ohttp-relay)](https://goreportcard.com/report/github.com/alpe/ohttp-relay)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-The **OHTTP Relay** is an [Envoy External Processor (ext_proc)](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_proc_filter) that enables privacy-preserving communication by forwarding [Oblivious HTTP (OHTTP)](https://datatracker.ietf.org/doc/rfc9458/) encapsulated requests to a configured gateway.
-
+The **OHTTP Relay** is an [Envoy External Processor (ext_proc)](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/ext_proc_filter) that enables privacy-preserving communication by forwarding [Oblivious HTTP](https://datatracker.ietf.org/doc/rfc9458/) encapsulated requests to a configured gateway.
 It acts strictly as a relay: it does not decrypt or interpret the payload, ensuring that the relay sees only the source IP and the gateway sees only the encrypted message.
+
+## Documentation
+
+* [Architecture](docs/architecture.md) - high-level overview
+* [Configuration](docs/configuration.md) - flags and options
+* [Deployment](docs/deployment.md) - how to build and run
+* [RFC9458](https://www.ietf.org/rfc/rfc9458.html) - Oblivious HTTP
 
 > **Official Documentation & Demo:** [orelay.dev](https://orelay.dev)
 
