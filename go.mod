@@ -1,6 +1,6 @@
 module github.com/alpe/ohttp-relay
 
-go 1.25.4
+go 1.25.7
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
