@@ -1,0 +1,136 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+version: 2
+
+project_name: ohttp-relay
+
+before:
+  hooks:
+    - go mod tidy
+    - go vet ./...
+
+builds:
+  - id: ohttp-relay
+    main: ./cmd/ohttp-relay
+    binary: ohttp-relay
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    flags:
+      - -trimpath
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+  - id: echo-gateway
+    main: ./cmd/echo-gateway
+    binary: echo-gateway
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    flags:
+      - -trimpath
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+dockers:
+  - id: ohttp-relay
+    ids:
+      - ohttp-relay
+    image_templates:
+      - "ghcr.io/alpe/ohttp-relay:{{ .Version }}"
+      - "ghcr.io/alpe/ohttp-relay:latest"
+    dockerfile: cmd/ohttp-relay/Dockerfile
+    use: buildx
+    extra_files:
+      - go.mod
+      - go.sum
+      - cmd/
+      - pkg/
+      - internal/
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title=ohttp-relay"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+
+  - id: echo-gateway
+    ids:
+      - echo-gateway
+    image_templates:
+      - "ghcr.io/alpe/echo-gateway:{{ .Version }}"
+      - "ghcr.io/alpe/echo-gateway:latest"
+    dockerfile: cmd/echo-gateway/Dockerfile
+    use: buildx
+    extra_files:
+      - go.mod
+      - go.sum
+      - cmd/
+      - pkg/
+      - internal/
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title=echo-gateway"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+
+archives:
+  - id: default
+    formats:
+      - tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+sboms:
+  - artifacts: archive
+
+changelog:
+  sort: asc
+  use: github
+  groups:
+    - title: "🚀 Features"
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "🐛 Bug Fixes"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: "📚 Documentation"
+      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
+      order: 2
+    - title: "🔧 Maintenance"
+      regexp: '^.*?(chore|ci|build|refactor)(\([[:word:]]+\))??!?:.+$'
+      order: 3
+    - title: "Other"
+      order: 999
+  filters:
+    exclude:
+      - "^Merge"
+
+release:
+  github:
+    owner: alpe
+    name: ohttprelay
+  prerelease: auto
+  make_latest: true

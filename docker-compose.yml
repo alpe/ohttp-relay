@@ -15,6 +15,11 @@ services:
       - ./dev/testkeys:/keys:ro
     ports:
       - "8888:8888"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
     networks:
       - ohttpnet
 
@@ -43,6 +48,11 @@ services:
     depends_on:
       - echo-gateway
       - redis
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
     networks:
       - ohttpnet
 
@@ -60,6 +70,13 @@ services:
       - "9901:9901" # Envoy admin
     depends_on:
       - ohttp-relay
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
     networks:
       - ohttpnet
 
@@ -68,6 +85,13 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /data
     networks:
       - ohttpnet
     # Simple OHTTP client for manual testing

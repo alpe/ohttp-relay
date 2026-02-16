@@ -8,18 +8,20 @@ updates:
     groups:
       all-go:
         patterns: ["*"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      all-actions:
+        patterns: ["*"]
   - package-ecosystem: "docker"
     directory: "/cmd/echo-gateway"
     schedule:
       interval: daily
       time: "01:00"
   - package-ecosystem: "docker"
-    directory: "/cmd/gateway-registry"
-    schedule:
-      interval: daily
-      time: "01:00"
-  - package-ecosystem: "docker"
-    directory: "/cmd/ohttprelay"
+    directory: "/cmd/ohttp-relay"
     schedule:
       interval: daily
       time: "01:00"
@@ -29,4 +31,3 @@ updates:
         update-types:
           - "patch"
           - "minor"
-

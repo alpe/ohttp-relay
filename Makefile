@@ -8,7 +8,7 @@ BIN_DIR := bin
 CMD_PKGS := $(wildcard cmd/*)
 
 # Docker settings
-DOCKER_REPO := alpetest
+DOCKER_REPO := ghcr.io/alpe
 
 .DEFAULT_GOAL := help
 
@@ -107,3 +107,11 @@ docker-publish: ## Publish docker images (requires VERSION)
 		fi \
 	done
 .PHONY: docker-publish
+
+release-dry-run: ## Run GoReleaser in snapshot mode (local dry-run)
+	goreleaser release --snapshot --clean
+.PHONY: release-dry-run
+
+vuln-check: ## Run govulncheck against all packages
+	govulncheck ./...
+.PHONY: vuln-check
