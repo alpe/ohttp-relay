@@ -98,7 +98,7 @@ services:
     # Disabled by default; enable via:
     # docker compose --profile client up test-client-rly
   test-client-rly:
-    image: golang:1.25
+    image: golang:1.25.7
     container_name: ohttprelay-test-client
     working_dir: /app
     environment:
