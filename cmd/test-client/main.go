@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/alpe/ohttp-relay/pkg/echo-gateway/keyconfig"
-	"github.com/confidentsecurity/ohttp"
+	"github.com/openpcc/ohttp"
 )
 
 const (

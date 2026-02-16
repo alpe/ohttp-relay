@@ -86,22 +86,24 @@ fmt: ## Format Go sources
 	$(GO) fmt ./...
 .PHONY: fmt
 
-docker-build-all-linux: ## cross build all docker artifacts for linux/amd64
+docker-build: ## Build docker images for linux/amd64 (requires VERSION)
+	@[ "${VERSION}" ] || ( echo "VERSION is not set"; exit 1 )
 	@for pkg in $(CMD_PKGS); do \
 		binary=$$(basename $$pkg); \
 		if [ -f "$$pkg/Dockerfile" ]; then \
-			echo "Building Docker image for $$binary..."; \
-			docker buildx build --platform=linux/amd64 -t $(DOCKER_REPO)/$$binary:local -f $$pkg/Dockerfile .; \
+			echo "Building Docker image for $$binary:$(VERSION)..."; \
+			docker buildx build --platform=linux/amd64 -t $(DOCKER_REPO)/$$binary:$(VERSION) -f $$pkg/Dockerfile .; \
 		fi \
 	done
-.PHONY: docker-build-all-linux
+.PHONY: docker-build
 
-docker-publish-all-linux: ## publish all local dev docker builds to docker hub
+docker-publish: ## Publish docker images (requires VERSION)
+	@[ "${VERSION}" ] || ( echo "VERSION is not set"; exit 1 )
 	@for pkg in $(CMD_PKGS); do \
 		binary=$$(basename $$pkg); \
 		if [ -f "$$pkg/Dockerfile" ]; then \
-			echo "pushing Docker image for $(DOCKER_REPO)/$$binary:local..."; \
-			docker push $(DOCKER_REPO)/$$binary:local; \
+			echo "Pushing Docker image for $(DOCKER_REPO)/$$binary:$(VERSION)..."; \
+			docker push $(DOCKER_REPO)/$$binary:$(VERSION); \
 		fi \
 	done
-.PHONY: docker-publish-all-linux
+.PHONY: docker-publish
