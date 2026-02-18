@@ -4,7 +4,7 @@ go 1.25.7
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/envoyproxy/go-control-plane/envoy v1.36.0
+	github.com/envoyproxy/go-control-plane/envoy v1.37.0
 	github.com/go-logr/logr v1.4.3
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/prometheus/client_golang v1.23.2
@@ -24,7 +24,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.36.1
 	github.com/cloudflare/circl v1.6.3
 	github.com/openpcc/ohttp v0.0.80
-	github.com/redis/go-redis/v9 v9.17.3
+	github.com/redis/go-redis/v9 v9.18.0
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/otel/exporters/prometheus v0.62.0
 	go.opentelemetry.io/otel/metric v1.40.0
@@ -52,6 +52,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel/sdk v1.40.0 // indirect
 	go.opentelemetry.io/otel/trace v1.40.0 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
